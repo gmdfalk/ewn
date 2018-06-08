@@ -33,7 +33,7 @@ public class ConsoleClient implements IClient, Runnable {
         Scanner scanner = new Scanner(inputReader);
 
         String input = scanner.nextLine();
-        System.out.println("Received input: " + input);
+//        System.out.println("Received input: " + input);
 
         return input;
     }
@@ -75,7 +75,7 @@ public class ConsoleClient implements IClient, Runnable {
     public void login(String username) {
         try {
             serverConnection.sendAction(ServerAction.LOGIN, username);
-            serverConnection.sendAction(ServerAction.WERBINICH, null);
+            serverConnection.sendAction(ServerAction.WERBINICH);
         } catch (NotConnectedToServerException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -86,7 +86,7 @@ public class ConsoleClient implements IClient, Runnable {
 
     public void logout() {
         try {
-            serverConnection.sendAction(ServerAction.LOGOUT, null);
+            serverConnection.sendAction(ServerAction.LOGOUT);
         } catch (NotConnectedToServerException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -105,8 +105,8 @@ public class ConsoleClient implements IClient, Runnable {
     public void play() {
         try {
             // For some reason, we need to send the LISTE command twice to get the actual list of players.
-            serverConnection.sendAction(ServerAction.LISTE, null);
-            ServerResponse listeResponse = serverConnection.sendAction(ServerAction.LISTE, null);
+            serverConnection.sendAction(ServerAction.LISTE);
+            ServerResponse listeResponse = serverConnection.sendAction(ServerAction.LISTE);
 
             List<String> opponents = listeResponse.availableOpponents();
             String chosenOpponent = chooseOpponent(opponents);
@@ -144,6 +144,5 @@ public class ConsoleClient implements IClient, Runnable {
         while (this.isRunning) {
             this.processInput(this.readInput());
         }
-        logout();
     }
 }

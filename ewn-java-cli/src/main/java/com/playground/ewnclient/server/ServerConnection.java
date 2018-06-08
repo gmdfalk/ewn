@@ -47,6 +47,10 @@ public class ServerConnection {
         return response;
     }
 
+    public ServerResponse sendAction(ServerAction serverAction) throws IOException, NotConnectedToServerException {
+        return this.sendAction(serverAction, null);
+    }
+
     private ServerResponse sendRequest(String request) throws IOException {
         writer.write(request + "\n");
         writer.flush();
