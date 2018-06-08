@@ -11,16 +11,17 @@ public class ServerResponse {
 
     public ServerResponseCode code;
     public String message;
-    private Pattern pattern;
+    public String responseString;
+    private Pattern responsePattern;
 
-    public ServerResponse(String message) {
-        pattern = Pattern.compile("^Server\\s([A-Z][0-9]{0,3})>\\s(.*)$");
-        this.message = message;
-        this.parseMessage();
+    public ServerResponse(String responseString) {
+        responsePattern = Pattern.compile("^Server\\s([A-Z][0-9]{0,3})>\\s(.*)$");
+        this.responseString = responseString;
+        this.parseResponseString(responseString);
     }
 
-    private void parseMessage() {
-        Matcher matcher = pattern.matcher(this.message);
+    private void parseResponseString(String response) {
+        Matcher matcher = responsePattern.matcher(response);
         while (matcher.find()) {
             this.code = ServerResponseCode.valueOf(matcher.group(1));
             this.message = matcher.group(2);
@@ -28,7 +29,7 @@ public class ServerResponse {
     }
 
     public List<String> availableOpponents() {
-        // Example response: "Server B> Folgende Spieler waeren bereit zu spielen: cb  cb1  cb2"
+        // Example responseString: "Server B> Folgende Spieler waeren bereit zu spielen: cb  cb1  cb2"
         if (!message.contains("Folgende Spieler waeren bereit zu spielen")) {
             return null;
         }
