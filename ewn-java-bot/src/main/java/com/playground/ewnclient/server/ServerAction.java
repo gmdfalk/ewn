@@ -1,4 +1,4 @@
-package com.playground.ewnclient;
+package com.playground.ewnclient.server;
 
 public enum ServerAction {
     HILFE("hilfe"), LOGIN("login"), LOGOUT("logout"), LISTE("liste"), WERBINICH("werBinIch"), SPIEL("spiel");

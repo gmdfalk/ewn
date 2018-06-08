@@ -1,4 +1,4 @@
-package com.playground.ewnclient;
+package com.playground.ewnclient.client;
 
 public interface IClient {
     void login();

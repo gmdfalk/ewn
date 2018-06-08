@@ -1,5 +1,7 @@
 package com.playground.ewnclient;
 
+import com.playground.ewnclient.client.ConsoleClient;
+
 import java.io.InputStreamReader;
 
 public class App {

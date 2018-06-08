@@ -1,22 +1,18 @@
-package com.playground.ewnclient;
+package com.playground.ewnclient.server;
 
 import java.io.*;
 import java.net.Socket;
 
 public class ServerConnection {
-    protected Socket socket;
+    public Socket socket;
     private String host = "vpf.mind-score.de";
     private int port = 1078;
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    public void connect() {
-        try {
-            socket = new Socket(host, port);
-            setupStreams();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void connect() throws IOException {
+        socket = new Socket(host, port);
+        setupStreams();
     }
 
     private void setupStreams() throws IOException {
@@ -29,7 +25,10 @@ public class ServerConnection {
         reader = new BufferedReader(inputStreamReader);
     }
 
-    public String sendAction(ServerAction serverAction, String parameter) throws IOException {
+    public String sendAction(ServerAction serverAction, String parameter) throws IOException, NotConnectedToServerException {
+        if (socket == null || !socket.isConnected()) {
+            throw new NotConnectedToServerException();
+        }
         String request = serverAction.toString();
         if (parameter != null) {
             request += " " + parameter;

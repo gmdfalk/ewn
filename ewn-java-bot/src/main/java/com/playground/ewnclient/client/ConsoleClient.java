@@ -1,4 +1,8 @@
-package com.playground.ewnclient;
+package com.playground.ewnclient.client;
+
+import com.playground.ewnclient.server.NotConnectedToServerException;
+import com.playground.ewnclient.server.ServerAction;
+import com.playground.ewnclient.server.ServerConnection;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -11,9 +15,10 @@ public class ConsoleClient implements IClient, Runnable {
     private Reader inputReader;
     private ServerConnection serverConnection;
 
-    ConsoleClient(Reader inputReader) {
+    public ConsoleClient(Reader inputReader) {
         this.inputReader = inputReader;
         this.isRunning = true;
+        this.serverConnection = new ServerConnection();
     }
 
     String readInput() {
@@ -60,6 +65,8 @@ public class ConsoleClient implements IClient, Runnable {
             System.out.println(loginResponse);
             String werBinIchResponse = serverConnection.sendAction(ServerAction.WERBINICH, null);
             System.out.println(werBinIchResponse);
+        } catch (NotConnectedToServerException e) {
+            System.out.println("Currently not connected to the server. Please connect first.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,23 +74,21 @@ public class ConsoleClient implements IClient, Runnable {
     }
 
     public void logout() {
-        if (!serverConnection.socket.isConnected()) {
-            System.out.println("Already logged out.");
-            return;
-        }
         try {
             String response = serverConnection.sendAction(ServerAction.LOGOUT, null);
             System.out.println(response);
+        } catch (NotConnectedToServerException e) {
+            System.out.println("Currently not connected to the server.");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void connect() {
-        serverConnection = new ServerConnection();
-        serverConnection.connect();
-        if (!serverConnection.socket.isConnected()) {
-            System.out.println("Could not connect");
+        try {
+            serverConnection.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -91,6 +96,8 @@ public class ConsoleClient implements IClient, Runnable {
         try {
             String response = serverConnection.sendAction(ServerAction.SPIEL, null);
             System.out.println(response);
+        } catch (NotConnectedToServerException e) {
+            System.out.println("Currently not connected to the server. Please connect first.");
         } catch (IOException e) {
             e.printStackTrace();
         }
