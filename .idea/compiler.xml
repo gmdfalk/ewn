@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ewn-java-bot" />
+        <module name="ewn-java-cli" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ewn-java-bot" target="1.5" />
+      <module name="ewn-java-cli" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

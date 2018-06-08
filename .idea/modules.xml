@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ewn.iml" filepath="$PROJECT_DIR$/.idea/ewn.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ewn-java-bot/ewn-java-bot.iml" filepath="$PROJECT_DIR$/ewn-java-bot/ewn-java-bot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ewn-java-cli/ewn-java-cli.iml" filepath="$PROJECT_DIR$/ewn-java-cli/ewn-java-cli.iml" />
     </modules>
   </component>
 </project>
