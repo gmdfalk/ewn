@@ -27,7 +27,7 @@ public class ServerConnection {
 
     public String sendAction(ServerAction serverAction, String parameter) throws IOException, NotConnectedToServerException {
         if (socket == null || !socket.isConnected()) {
-            throw new NotConnectedToServerException();
+            throw new NotConnectedToServerException("Currently not connected to the server.");
         }
         String request = serverAction.toString();
         if (parameter != null) {

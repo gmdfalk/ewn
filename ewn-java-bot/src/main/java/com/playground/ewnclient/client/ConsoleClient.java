@@ -66,7 +66,7 @@ public class ConsoleClient implements IClient, Runnable {
             String werBinIchResponse = serverConnection.sendAction(ServerAction.WERBINICH, null);
             System.out.println(werBinIchResponse);
         } catch (NotConnectedToServerException e) {
-            System.out.println("Currently not connected to the server. Please connect first.");
+            System.out.println(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class ConsoleClient implements IClient, Runnable {
             String response = serverConnection.sendAction(ServerAction.LOGOUT, null);
             System.out.println(response);
         } catch (NotConnectedToServerException e) {
-            System.out.println("Currently not connected to the server.");
+            System.out.println(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,7 +97,7 @@ public class ConsoleClient implements IClient, Runnable {
             String response = serverConnection.sendAction(ServerAction.SPIEL, null);
             System.out.println(response);
         } catch (NotConnectedToServerException e) {
-            System.out.println("Currently not connected to the server. Please connect first.");
+            System.out.println(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
