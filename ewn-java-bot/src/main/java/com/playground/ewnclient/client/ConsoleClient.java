@@ -3,15 +3,13 @@ package com.playground.ewnclient.client;
 import com.playground.ewnclient.server.NotConnectedToServerException;
 import com.playground.ewnclient.server.ServerAction;
 import com.playground.ewnclient.server.ServerConnection;
+import com.playground.ewnclient.server.ServerResponse;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ConsoleClient implements IClient, Runnable {
 
@@ -23,6 +21,12 @@ public class ConsoleClient implements IClient, Runnable {
         this.inputReader = inputReader;
         this.isRunning = true;
         this.serverConnection = new ServerConnection();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                logout();
+            }
+        });
     }
 
     String readInput() {
@@ -70,10 +74,8 @@ public class ConsoleClient implements IClient, Runnable {
 
     public void login(String username) {
         try {
-            String loginResponse = serverConnection.sendAction(ServerAction.LOGIN, username);
-            System.out.println(loginResponse);
-            String werBinIchResponse = serverConnection.sendAction(ServerAction.WERBINICH, null);
-            System.out.println(werBinIchResponse);
+            serverConnection.sendAction(ServerAction.LOGIN, username);
+            serverConnection.sendAction(ServerAction.WERBINICH, null);
         } catch (NotConnectedToServerException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -84,8 +86,7 @@ public class ConsoleClient implements IClient, Runnable {
 
     public void logout() {
         try {
-            String response = serverConnection.sendAction(ServerAction.LOGOUT, null);
-            System.out.println(response);
+            serverConnection.sendAction(ServerAction.LOGOUT, null);
         } catch (NotConnectedToServerException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -103,12 +104,16 @@ public class ConsoleClient implements IClient, Runnable {
 
     public void play() {
         try {
-            String listeResponse = serverConnection.sendAction(ServerAction.LISTE, null);
-            System.out.println(listeResponse);
-//            List<String> availablePlayers = parseAvailablePlayers(listeResponse);
+            // For some reason, we need to send the LISTE command twice to get the actual list of players.
+            serverConnection.sendAction(ServerAction.LISTE, null);
+            ServerResponse listeResponse = serverConnection.sendAction(ServerAction.LISTE, null);
 
-//            String spielResponse = serverConnection.sendAction(ServerAction.SPIEL, null);
-//            System.out.println(spielResponse);
+            List<String> opponents = listeResponse.availableOpponents();
+            String chosenOpponent = chooseOpponent(opponents);
+
+            // Again, apparently we need to double down on this command.
+            serverConnection.sendAction(ServerAction.SPIEL, chosenOpponent);
+            serverConnection.sendAction(ServerAction.SPIEL, chosenOpponent);
         } catch (NotConnectedToServerException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -116,16 +121,13 @@ public class ConsoleClient implements IClient, Runnable {
         }
     }
 
-    private List<String> parseAvailablePlayers(String listeResponse) {
-        List<String> players = new ArrayList<String>();
-        Pattern pattern = Pattern.compile(".*:\\s\\b(.*)\\b+");
-        Matcher matcher = pattern.matcher(listeResponse);
-        while (matcher.find()) {
-            System.out.println("group 1: " + matcher.group(1));
-            System.out.println("group 2: " + matcher.group(2));
-            System.out.println("group 3: " + matcher.group(3));
+    private String chooseOpponent(List<String> opponents) {
+        System.out.println("Please choose your opponent: " + opponents.toString());
+        String choice = null;
+        while (!opponents.contains(choice)) {
+            choice = readInput();
         }
-        return players;
+        return choice;
     }
 
     public void help() {
@@ -142,5 +144,6 @@ public class ConsoleClient implements IClient, Runnable {
         while (this.isRunning) {
             this.processInput(this.readInput());
         }
+        logout();
     }
 }

@@ -1,5 +1,7 @@
 package com.playground.ewnclient.server;
 
+import com.sun.security.ntlm.Server;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -30,7 +32,7 @@ public class ServerConnection {
         return socket != null && socket.isConnected();
     }
 
-    public String sendAction(ServerAction serverAction, String parameter) throws IOException, NotConnectedToServerException {
+    public ServerResponse sendAction(ServerAction serverAction, String parameter) throws IOException, NotConnectedToServerException {
         if (!isConnected()) {
             throw new NotConnectedToServerException("Currently not connected to the server.");
         }
@@ -38,7 +40,7 @@ public class ServerConnection {
         if (parameter != null) {
             request += " " + parameter;
         }
-        String response = null;
+        ServerResponse response = null;
         try {
             response = sendRequest(request);
         } catch (SocketException e) {
@@ -47,12 +49,12 @@ public class ServerConnection {
         return response;
     }
 
-    private String sendRequest(String request) throws IOException {
+    private ServerResponse sendRequest(String request) throws IOException {
         writer.write(request + "\n");
         writer.flush();
-        System.out.println("Message sent to the server : " + request);
-        String response = reader.readLine();
-        System.out.println("Response received from the server : " + response);
+        System.out.println("Request: " + request);
+        ServerResponse response = new ServerResponse(reader.readLine());
+        System.out.println("Response: " + response);
         return response;
     }
 }
