@@ -1,5 +1,5 @@
 package com.playground.ewnclient;
 
-public enum ClientActions {
+public enum ClientAction {
     LOGIN, LOGOUT, CONNECT, PLAY, HELP, EXIT
 }
