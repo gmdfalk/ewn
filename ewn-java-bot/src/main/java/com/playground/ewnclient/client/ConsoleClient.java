@@ -6,8 +6,12 @@ import com.playground.ewnclient.server.ServerConnection;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ConsoleClient implements IClient, Runnable {
 
@@ -24,7 +28,7 @@ public class ConsoleClient implements IClient, Runnable {
     String readInput() {
         Scanner scanner = new Scanner(inputReader);
 
-        String input = scanner.next();
+        String input = scanner.nextLine();
         System.out.println("Received input: " + input);
 
         return input;
@@ -32,11 +36,16 @@ public class ConsoleClient implements IClient, Runnable {
 
     void processInput(String input) {
         ClientAction clientAction;
+        List<String> inputArgs = Arrays.asList(input.split("\\s"));
         try {
-            clientAction = ClientAction.valueOf(input.toUpperCase());
+            clientAction = ClientAction.valueOf(inputArgs.get(0).toUpperCase());
             switch (clientAction) {
                 case LOGIN:
-                    login();
+                    if (inputArgs.size() == 2) {
+                        login(inputArgs.get(1));
+                    } else {
+                        System.out.println("Usage: 'login sokrates'");
+                    }
                     break;
                 case LOGOUT:
                     logout();
@@ -59,9 +68,9 @@ public class ConsoleClient implements IClient, Runnable {
         }
     }
 
-    public void login() {
+    public void login(String username) {
         try {
-            String loginResponse = serverConnection.sendAction(ServerAction.LOGIN, "max");
+            String loginResponse = serverConnection.sendAction(ServerAction.LOGIN, username);
             System.out.println(loginResponse);
             String werBinIchResponse = serverConnection.sendAction(ServerAction.WERBINICH, null);
             System.out.println(werBinIchResponse);
@@ -94,13 +103,29 @@ public class ConsoleClient implements IClient, Runnable {
 
     public void play() {
         try {
-            String response = serverConnection.sendAction(ServerAction.SPIEL, null);
-            System.out.println(response);
+            String listeResponse = serverConnection.sendAction(ServerAction.LISTE, null);
+            System.out.println(listeResponse);
+//            List<String> availablePlayers = parseAvailablePlayers(listeResponse);
+
+//            String spielResponse = serverConnection.sendAction(ServerAction.SPIEL, null);
+//            System.out.println(spielResponse);
         } catch (NotConnectedToServerException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private List<String> parseAvailablePlayers(String listeResponse) {
+        List<String> players = new ArrayList<String>();
+        Pattern pattern = Pattern.compile(".*:\\s\\b(.*)\\b+");
+        Matcher matcher = pattern.matcher(listeResponse);
+        while (matcher.find()) {
+            System.out.println("group 1: " + matcher.group(1));
+            System.out.println("group 2: " + matcher.group(2));
+            System.out.println("group 3: " + matcher.group(3));
+        }
+        return players;
     }
 
     public void help() {

@@ -2,6 +2,7 @@ package com.playground.ewnclient.server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ServerConnection {
     public Socket socket;
@@ -25,14 +26,28 @@ public class ServerConnection {
         reader = new BufferedReader(inputStreamReader);
     }
 
+    public boolean isConnected() {
+        return socket != null && socket.isConnected();
+    }
+
     public String sendAction(ServerAction serverAction, String parameter) throws IOException, NotConnectedToServerException {
-        if (socket == null || !socket.isConnected()) {
+        if (!isConnected()) {
             throw new NotConnectedToServerException("Currently not connected to the server.");
         }
         String request = serverAction.toString();
         if (parameter != null) {
             request += " " + parameter;
         }
+        String response = null;
+        try {
+            response = sendRequest(request);
+        } catch (SocketException e) {
+            System.out.println("Socket is broken. Please reconnect.");
+        }
+        return response;
+    }
+
+    private String sendRequest(String request) throws IOException {
         writer.write(request + "\n");
         writer.flush();
         System.out.println("Message sent to the server : " + request);
